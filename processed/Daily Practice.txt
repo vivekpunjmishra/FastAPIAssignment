@@ -1,0 +1,77 @@
+Trigger testLeadTriggger on lead(after insert){
+Task CreateTask = new Task();
+for(lead newlead : Trigger.new){
+Task tsk : new Task();
+tsk.Salutation = 'Mr.';
+tsk.LastName = 'taskWithLead';
+tsk.Company = 'GyanSys Inc.';
+tsk.Status = 'Not Contacted';
+tsk.OwnerId = newlead.OwnerId;
+CreateTask.add(tsk);
+}
+Update CreateTask;
+}
+
+
+___________________________________________________________________________________________________________________________
+Public Class BatchClass implemants Database.Batchable<sObject>{
+Public Database.Querylocater start (Database.BatchableContext bc){
+
+return Database.getQueryLocater([Select Id, Name from Account])}
+
+Public void execute(Database.BatchableContext bc, List<Account> sc){
+Account UpdateAcc = new Account();
+for(Account Acc : sc){
+If(Acc.BillingPostalCode != Null){
+Acc.ShippingPostalCode == Acc.BillingPostalCode;
+UpdateAcc.add(Acc);
+}
+}
+}
+Public void Finish(Database.BatchableContext bs){
+}
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  
+Js
+import {LightningElement, wire} from 'lwc';
+import getAccountDetalis from '@Salesforce/Apex/ApexClass.getAccount';
+export default class AccountDetails extends LightningElement {
+@wire(getAccountDetalis)
+account;
+}
+html
+<template>
+<template if:ture = {account.data}>
+<ul>
+<tempalte for:each={account.data} for:item={account}>
+<li key={account.Id}>{account.name}</li>
+</template>
+</ul>
+</template>
+<template if:false={account.data}>
+<p>No account found.</p>
+</template>
+</template>
+----------------------------------------------------------------------------------------------------------------
+Trigger handaler
+Trigger OppStageTrigger on Opportunity(before trigger){
+OppTriggerHelper.OppStageChange(Trigger.new, Trigger.oldMap);
+}
+
+Trigger Halper
+public class OppTriggerHelper{
+public static void OppStageChange(List<Opportunity> newList, Map<Id, Opportunity> oldOppMap){
+List<Task> CreateTask = new List<Task>();
+for(opportunity opp: newList){
+if(opp.StageName != oldOppMap.get(opp.Id).StageName){
+task newtask = new task();
+newtask.ownerId = opp.OwnerId;
+newtask.status = 'Not Started';
+newtask.Subject = 'Other';
+newtask.priority = 'Normal';
+CreateTask.add(newTask);
+}
+}
+Update CreateTask;
+}
+}
